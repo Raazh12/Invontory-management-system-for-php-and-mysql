@@ -10,7 +10,15 @@
 <body>
     <div class="container my-5">
         <h1 class="mb-4">Product List</h1>
-        <a href="insert.php" class="btn btn-primary mb-3">Add New Product</a>
+        <div class="d-flex mb-3">
+            <a href="insert.php" class="btn btn-primary me-2">Add New Product</a>
+            <!-- Search Form -->
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search by name or price..." aria-label="Search">
+                <button class="btn btn-outline-secondary btn-sm" type="submit">Search</button>
+            </form>
+        </div>
+
         <div class="row">
             <?php
             $con = new mysqli("localhost", "root", "", "inventory_management_db");
@@ -58,12 +66,14 @@
                 }
             }
 
-            // Fetch products
-            $sql = "SELECT * FROM products";
-            $result = $con->query($sql);
-            if (!$result) {
-                die("Query failed: " . $con->error);
-            }
+            // Fetch products with search functionality
+            $search = isset($_GET['search']) ? $_GET['search'] : '';
+            $sql = "SELECT * FROM products WHERE name LIKE ? OR price LIKE ?";
+            $stmt = $con->prepare($sql);
+            $likeSearch = "%" . $search . "%";
+            $stmt->bind_param("ss", $likeSearch, $likeSearch);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_array()) {
