@@ -33,7 +33,7 @@ if ($productId) {
         <img src="<?php echo htmlspecialchars($product['image']); ?>" class="img-fluid mb-4" alt="Product Image">
         <p><strong>Description:</strong> <?php echo htmlspecialchars($product['description']); ?></p>
         <p><strong>Price:</strong> $<?php echo htmlspecialchars($product['price']); ?></p>
-        <a href="select.php" class="btn btn-secondary">Back to Product List</a>
+        <a href="select.php" class="btn btn-secondary">Back to Product Lists</a>
     </div>
 </body>
 </html>
