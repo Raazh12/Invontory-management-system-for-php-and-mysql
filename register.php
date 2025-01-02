@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration</title>
+    <title>User Registrations</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
 <div class="container mt-5">
-    <h2 class="text-center">User Registration</h2>
+    <h2 class="text-center">User Registrations</h2>
     <form method="POST" class="mt-4">
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>

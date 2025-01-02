@@ -23,15 +23,15 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
+    <title>Product Lists</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container my-5">
-        <h1 class="mb-4 text-center">Product List</h1>
+        <h1 class="mb-4 text-center">Product Lists</h1>
         <?php if ($userRole === 'admin') { ?>
             <div class="d-flex mb-3 justify-content-between">
-                <a href="insert.php" class="btn btn-primary">Add New Product</a>
+                <a href="insert.php" class="btn btn-primary">Add New Products</a>
                 <form method="GET" class="d-flex">
                     <input type="text" name="search" class="form-control me-2" placeholder="Search by name or price..." aria-label="Search">
                     <button class="btn btn-outline-secondary btn-sm" type="submit">Search</button>
