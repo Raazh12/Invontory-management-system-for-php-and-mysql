@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container my-5">
@@ -17,6 +18,47 @@
                 die("Couldn't connect to the server: " . $con->connect_error);
             }
 
+            // Handle deletion
+            if (isset($_GET['did'])) {
+                $pid = $_GET['did'];
+                $sql = "DELETE FROM products WHERE id=?";
+                $stmt = $con->prepare($sql);
+                $stmt->bind_param("i", $pid);
+                if ($stmt->execute()) {
+                    echo "<script>alert('Data with ID $pid was deleted successfully'); window.location.href='select.php';</script>";
+                }
+            }
+
+            // Handle update
+            if (isset($_POST['updateData'])) {
+                $fn = $_POST['name'];
+                $add = $_POST['description'];
+                $ph = $_POST['price'];
+                $sd = $_POST['updateId'];
+                $imgs = $_FILES['image']['name'];
+                $target = "uploads/" . basename($imgs);
+
+                // If a new image is uploaded, update the image path
+                if ($imgs) {
+                    move_uploaded_file($_FILES['image']['tmp_name'], $target);
+                    $sqlupdate = "UPDATE products SET name=?, description=?, price=?, image=? WHERE id=?";
+                    $stmt = $con->prepare($sqlupdate);
+                    $stmt->bind_param("ssdsi", $fn, $add, $ph, $target, $sd);
+                } else {
+                    $sqlupdate = "UPDATE products SET name=?, description=?, price=? WHERE id=?";
+                    $stmt = $con->prepare($sqlupdate);
+                    $stmt->bind_param("ssdi", $fn, $add, $ph, $sd);
+                }
+
+                if ($stmt->execute()) {
+                    header("location: select.php");
+                    exit; // Ensure no further code is executed
+                } else {
+                    echo "<script>alert('Error updating product: " . $stmt->error . "');</script>";
+                }
+            }
+
+            // Fetch products
             $sql = "SELECT * FROM products";
             $result = $con->query($sql);
             if (!$result) {
@@ -35,8 +77,13 @@
                         <p class="card-text"><strong>Price:</strong> $<?php echo htmlspecialchars($row['price']); ?></p>
                         <a href="product_detail.php?id=<?php echo $row['id']; ?>" class="btn btn-info">View Details</a>
                         <a href="select.php?did=<?php echo $row['id']; ?>" class="btn btn-danger">Delete</a>
-                        <a href="update.php?id=<?php echo $row['id']; ?>" class="btn btn-warning">Update</a>
-                      
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal" 
+                            data-id="<?php echo $row['id']; ?>" 
+                            data-name="<?php echo htmlspecialchars($row['name']); ?>" 
+                            data-description="<?php echo htmlspecialchars($row['description']); ?>" 
+                            data-price="<?php echo htmlspecialchars($row['price']); ?>">
+                            Update
+                        </button>
                     </div>
                 </div>
             </div>
@@ -49,18 +96,59 @@
         </div>
     </div>
 
-    <?php
-    // Handle deletion
-    if (isset($_GET['did'])) {
-        $pid = $_GET['did'];
-        $sql = "DELETE FROM products WHERE id=?";
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param("i", $pid);
-        if ($stmt->execute()) {
-            echo "<script>alert('Data with ID $pid was deleted successfully'); window.location.href='select.php';</script>";
-        }
-    }
-    ?>
-    
+    <!-- Update Modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="" method="post" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateModalLabel">Update Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="updateId" id="updateId">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name:</label>
+                            <input type="text" name="name" id="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description:</label>
+                            <textarea name="description" id="description" class="form-control" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price:</label>
+                            <input type="text" name="price" id="price" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Upload New Image (optional):</label>
+                            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" name="updateData">Update Product</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Populate modal with product data
+        $('#updateModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var id = button.data('id');
+            var name = button.data('name');
+            var description = button.data('description');
+            var price = button.data('price');
+
+            var modal = $(this);
+            modal.find('#updateId').val(id);
+            modal.find('#name').val(name);
+            modal.find('#description').val(description);
+            modal.find('#price').val(price);
+        });
+    </script>
 </body>
 </html>
