@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 $con = new mysqli("localhost", "root", "", "inventory_management_db");
