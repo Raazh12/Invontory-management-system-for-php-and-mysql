@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 $con = new mysqli("localhost", "root", "", "inventory_management_db");
@@ -6,6 +5,11 @@ $con = new mysqli("localhost", "root", "", "inventory_management_db");
 if ($con->connect_error) {
     die("Couldn't connect to the server: " . $con->connect_error);
 }
+
+$customerName = "";
+$productId = 0;
+$quantity = 0;
+$email = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Collecting order data
@@ -46,11 +50,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("siis", $customerName, $productId, $quantity, $email);
 
     if ($stmt->execute()) {
-        echo "<h1>Order Confirmation</h1>";
-        echo "<p>Thank you, $customerName! Your order has been placed successfully.</p>";
-        echo "<p>Product ID: $productId</p>";
-        echo "<p>Quantity: $quantity</p>";
-        echo "<p>Email: $email</p>";
+        // Display confirmation page
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Order Confirmation</title>
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        </head>
+        <body class="bg-gray-200 flex items-center justify-center min-h-screen">
+            <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+                <h1 class="text-3xl font-bold text-center text-blue-600 mb-4">Order Confirmation</h1>
+                <div class="border border-blue-300 rounded-lg p-4 mb-6">
+                    <p class="text-lg text-gray-700">Thank you, <span class="font-semibold text-gray-800"><?php echo $customerName; ?></span>! Your order has been placed successfully.</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-gray-800"><strong>Product ID:</strong> <span class="text-blue-500"><?php echo $productId; ?></span></p>
+                    <p class="text-gray-800"><strong>Quantity:</strong> <span class="text-blue-500"><?php echo $quantity; ?></span></p>
+                    <p class="text-gray-800"><strong>Email:</strong> <span class="text-blue-500"><?php echo $email; ?></span></p>
+                </div>
+                <div class="mt-6 text-center">
+                    <a href="product_list.php" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition">Go back to the product list</a>
+                </div>
+            </div>
+        </body>
+        </html>
+        <?php
     } else {
         echo "<h1>Error</h1>";
         echo "<p>There was an issue placing your order: " . htmlspecialchars($stmt->error) . "</p>";

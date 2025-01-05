@@ -17,26 +17,51 @@ $result = $con->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+            border: none; /* Remove default border */
+            border-radius: 1.25rem; /* Slightly more rounded corners */
+        }
+        .card:hover {
+            transform: translateY(-5px); /* Lift on hover */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* Enhanced shadow effect */
+        }
+        .card-img-top {
+            height: 200px; /* Fixed height for images */
+            object-fit: cover; /* Keep aspect ratio */
+            border-top-left-radius: 1.25rem; /* Matching rounded corners */
+            border-top-right-radius: 1.25rem; /* Matching rounded corners */
+        }
+        .page-title {
+            font-size: 2.5rem; /* Larger title */
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
     <div class="container my-5">
-        <h1 class="mb-4 text-center">Product List</h1>
+        <h1 class="mb-4 text-center page-title">Product List</h1>
 
         <div class="row">
             <?php
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_array()) {
             ?>
-                <div class="col-md-3 mb-4">
-                    <div class="card">
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card shadow-lg">
                         <img src="<?php echo htmlspecialchars($row['image']); ?>" class="card-img-top" alt="Product Image" 
                              data-bs-toggle="modal" data-bs-target="#orderModal" 
                              data-id="<?php echo $row['id']; ?>" 
                              data-name="<?php echo htmlspecialchars($row['name']); ?>" 
                              data-price="<?php echo htmlspecialchars($row['price']); ?>">
                         <div class="card-body">
-                            <h5 class="card-title"><?php echo htmlspecialchars($row['name']); ?></h5>
-                            <p class="card-text"><?php echo htmlspecialchars($row['description']); ?></p>
+                            <h5 class="card-title text-truncate"><?php echo htmlspecialchars($row['name']); ?></h5>
+                            <p class="card-text text-muted"><?php echo htmlspecialchars($row['description']); ?></p>
                             <p class="card-text"><strong>Price:</strong> $<?php echo htmlspecialchars($row['price']); ?></p>
                         </div>
                     </div>
