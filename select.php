@@ -30,47 +30,47 @@ $result = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa; /* Light gray background */
+            background-color: #f8f9fa;
         }
         .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
-            border: none; /* Remove default border */
-            border-radius: 1.25rem; /* Slightly more rounded corners */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 1.25rem;
         }
         .card:hover {
-            transform: translateY(-5px); /* Lift on hover */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* Enhanced shadow effect */
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
         .card-img-top {
-            height: 200px; /* Fixed height for images */
-            object-fit: cover; /* Keep aspect ratio */
-            border-top-left-radius: 1.25rem; /* Matching rounded corners */
-            border-top-right-radius: 1.25rem; /* Matching rounded corners */
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 1.25rem;
+            border-top-right-radius: 1.25rem;
         }
         .page-title {
-            font-size: 2.5rem; /* Larger title */
+            font-size: 2.5rem;
             font-weight: bold;
             color: #333;
         }
         .btn-container {
-            margin-top: 1rem; /* Space above buttons */
+            margin-top: 1rem;
         }
         .btn {
-            flex: 1; /* Equal button width */
-            margin-right: 0.5rem; /* Space between buttons */
-            transition: all 0.3s ease; /* Smooth transition for button color and scale */
+            flex: 1;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
         }
         .btn:hover {
-            filter: brightness(90%); /* Darken button on hover */
-            transform: scale(1.05); /* Slightly enlarge on hover */
+            filter: brightness(90%);
+            transform: scale(1.05);
         }
         .btn-primary {
-            font-size: 1rem; /* Smaller text for add product button */
-            padding: 8px 16px; /* Adjust padding for a more compact button */
-            border-radius: 0.5rem; /* Rounded corners */
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 0.5rem;
         }
         .btn:last-child {
-            margin-right: 0; /* Remove margin for the last button */
+            margin-right: 0;
         }
     </style>
 </head>
@@ -79,7 +79,7 @@ $result = $stmt->get_result();
         <h1 class="mb-4 text-center page-title">Product Lists</h1>
         <?php if ($userRole === 'admin') { ?>
             <div class="d-flex mb-3 justify-content-between">
-                <a href="insert.php" class="btn btn-primary btn-sm">Add New Product</a> <!-- Changed to btn-sm -->
+                <a href="insert.php" class="btn btn-primary btn-sm">Add New Product</a>
                 <form method="GET" class="d-flex">
                     <input type="text" name="search" class="form-control me-2" placeholder="Search by name or price..." aria-label="Search">
                     <button class="btn btn-outline-secondary btn-sm" type="submit">Search</button>
@@ -168,7 +168,7 @@ $result = $stmt->get_result();
     <script>
         // Populate modal with product data
         $('#updateModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
+            var button = $(event.relatedTarget);
             var id = button.data('id');
             var name = button.data('name');
             var description = button.data('description');
@@ -188,11 +188,28 @@ $result = $stmt->get_result();
 // Handle deletion
 if (isset($_GET['did'])) {
     $pid = $_GET['did'];
-    $sql = "DELETE FROM products WHERE id=?";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $pid);
-    if ($stmt->execute()) {
-        echo "<script>alert('Product with ID $pid was deleted successfully'); window.location.href='select.php';</script>";
+
+    // Check for dependent orders
+    $checkOrdersSql = "SELECT COUNT(*) FROM orders WHERE product_id=?";
+    $checkOrdersStmt = $con->prepare($checkOrdersSql);
+    $checkOrdersStmt->bind_param("i", $pid);
+    $checkOrdersStmt->execute();
+    $checkOrdersStmt->bind_result($orderCount);
+    $checkOrdersStmt->fetch();
+    
+    if ($orderCount > 0) {
+        echo "<script>alert('Cannot delete the product because there are related orders.');</script>";
+    } else {
+        // No related orders, proceed with deletion
+        $sql = "DELETE FROM products WHERE id=?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param("i", $pid);
+        
+        if ($stmt->execute()) {
+            echo "<script>alert('Product with ID $pid was deleted successfully'); window.location.href='select.php';</script>";
+        } else {
+            echo "<script>alert('Error deleting product: " . $stmt->error . "');</script>";
+        }
     }
 }
 
@@ -217,7 +234,7 @@ if (isset($_POST['updateData'])) {
     }
 
     if ($stmt->execute()) {
-        header("location: select.php");
+        header("location: Dashboard.php");
         exit;
     } else {
         echo "<script>alert('Error updating product: " . $stmt->error . "');</script>";

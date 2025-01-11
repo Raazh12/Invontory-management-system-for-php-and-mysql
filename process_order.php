@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 } else {
     // Redirect back to the form if accessed directly
-    header("Location: product_list.php");
+    header("Location: Dashboard.php");
     exit();
 }
 

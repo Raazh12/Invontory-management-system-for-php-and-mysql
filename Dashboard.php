@@ -97,6 +97,12 @@ $role = $userRow['role']; // Get user role
                         <span class="text-sm">Insert Product</span>
                     </a>
                 </li>
+                <li class="mb-4">
+                    <a href="product_view_user.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                        <i class="fas fa-eye mr-2"></i>
+                        <span class="text-sm">View User Products</span>
+                    </a>
+                </li>
             <?php endif; ?>
             <li class="mb-4">
                 <a href="product_list.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
@@ -122,6 +128,15 @@ $role = $userRow['role']; // Get user role
     <!-- Main Content -->
     <div class="flex-1 ml-48 p-5 overflow-y-auto">
         <h1 class="text-3xl font-bold mb-5">Dashboard Overview</h1>
+
+        <!-- Add Product Button -->
+        <?php if ($role === 'admin'): ?>
+            <div class="mb-5">
+                <a href="insert.php" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition">
+                    <i class="fas fa-plus mr-2"></i> Add New Product
+                </a>
+            </div>
+        <?php endif; ?>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Total Sales Overview -->
