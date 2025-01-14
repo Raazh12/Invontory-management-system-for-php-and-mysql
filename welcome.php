@@ -28,7 +28,7 @@
 
                 <div class="mt-8 lg:mt-12 flex justify-center space-x-4">
                     <a href="login.php" class="inline-flex items-center justify-center px-6 py-4 font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:bg-blue-700">Login</a>
-                    <a href="register.php" class="inline-flex items-center justify-center px-6 py-4 font-semibold text-white transition-all duration-200 bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:bg-green-700">Register</a>
+                   
                 </div>
             </div>
         </div>

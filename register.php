@@ -4,6 +4,34 @@ ob_start();
 
 session_start();
 
+// Database connection
+$con = new mysqli("localhost", "root", "", "inventory_management_db");
+if ($con->connect_error) {
+    die("Connection failed: " . $con->connect_error);
+}
+
+// Check if admin user exists
+$admin_check = $con->prepare("SELECT * FROM users WHERE role = 'admin'");
+$admin_check->execute();
+$result = $admin_check->get_result();
+
+if ($result->num_rows === 0) {
+    // Create a default admin account
+    $default_admin_username = "admin";
+    $default_admin_email = "admin@example.com";
+    $default_admin_password = password_hash("AdminPassword123", PASSWORD_DEFAULT);
+    $default_admin_age = 30; // Default age
+    $default_admin_phone = "1234567890"; // Default phone number
+    $default_admin_role = "admin";
+    $default_admin_sex = "male"; // Default sex
+
+    $insert_admin_sql = "INSERT INTO users (username, email, password, age, phone_number, sex, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $insert_stmt = $con->prepare($insert_admin_sql);
+    $insert_stmt->bind_param("sssssss", $default_admin_username, $default_admin_email, $default_admin_password, $default_admin_age, $default_admin_phone, $default_admin_sex, $default_admin_role);
+    $insert_stmt->execute();
+    $insert_stmt->close();
+}
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
@@ -13,11 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone_number = $_POST['phone_number'];
     $sex = $_POST['sex'];
     $role = $_POST['role'];
-
-    $con = new mysqli("localhost", "root", "", "inventory_management_db");
-    if ($con->connect_error) {
-        die("Connection failed: " . $con->connect_error);
-    }
 
     $sql = "INSERT INTO users (username, email, password, age, phone_number, sex, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $con->prepare($sql);
@@ -30,8 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error_msg = 'Error: ' . $stmt->error;
     }
     $stmt->close();
-    $con->close();
 }
+$con->close();
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>User Registration</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-900 py-10">
 
 <section class="relative py-10 bg-gray-900 sm:py-16 lg:py-24">

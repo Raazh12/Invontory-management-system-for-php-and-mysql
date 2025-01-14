@@ -4,12 +4,10 @@ if (!isset($_SESSION['user_id'])) {
     header("location: login.php");
     exit();
 }
-
 $con = new mysqli("localhost", "root", "", "inventory_management_db");
 if ($con->connect_error) {
     die("Couldn't connect to the server: " . $con->connect_error);
 }
-
 // Fetch inventory data
 $inventorySql = "SELECT COUNT(*) AS total_products, 
                         SUM(CASE WHEN stock < 5 THEN 1 ELSE 0 END) AS low_stock, 
@@ -67,63 +65,76 @@ $role = $userRow['role']; // Get user role
 <div class="flex h-screen">
     <!-- Sidebar -->
     <div class="w-48 bg-gray-800 text-white shadow-lg p-5 fixed h-full">
-        <h2 class="text-lg font-bold mb-5">Dashboard</h2>
-        <div class="mb-5">
-            <p class="text-sm">Logged in as: <span class="font-semibold"><?php echo $username; ?></span></p>
-            <p class="text-sm">
-                Status: 
-                <span class="<?php echo $isActive ? 'text-green-400' : 'text-red-400'; ?>">
-                    <?php echo $isActive ? 'Active' : 'Inactive'; ?>
-                </span>
-            </p>
-        </div>
-        <ul>
+    <h2 class="text-lg font-bold mb-5">Dashboard</h2>
+    <div class="mb-5">
+        <p class="text-sm">Logged in as: <span class="font-semibold"><?php echo $username; ?></span></p>
+        <p class="text-sm">
+            Status: 
+            <span class="<?php echo $isActive ? 'text-green-400' : 'text-red-400'; ?>">
+                <?php echo $isActive ? 'Active' : 'Inactive'; ?>
+            </span>
+        </p>
+    </div>
+    <ul>
+        <li class="mb-4">
+            <a href="dashboard.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                <i class="fas fa-chart-line mr-2"></i> 
+                <span class="text-sm">Dashboard Overview</span>
+            </a>
+        </li>
+        <?php if ($role === 'admin'): ?>
             <li class="mb-4">
-                <a href="dashboard.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
-                    <i class="fas fa-chart-line mr-2"></i> 
-                    <span class="text-sm">Dashboard Overview</span>
+                <a href="sales.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-chart-pie mr-2"></i>
+                    <span class="text-sm">Sales Reports</span>
                 </a>
             </li>
-            <?php if ($role === 'admin'): ?>
-                <li class="mb-4">
-                    <a href="sales.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-chart-pie mr-2"></i>
-                        <span class="text-sm">Sales Reports</span>
-                    </a>
-                </li>
-                <li class="mb-4">
-                    <a href="insert.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-plus mr-2"></i>
-                        <span class="text-sm">Insert Product</span>
-                    </a>
-                </li>
-                <li class="mb-4">
-                    <a href="product_view_user.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
-                        <i class="fas fa-eye mr-2"></i>
-                        <span class="text-sm">View User Products</span>
-                    </a>
-                </li>
-            <?php endif; ?>
+            <li class="mb-4">
+                <a href="insert.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-plus mr-2"></i>
+                    <span class="text-sm">Insert Product</span>
+                </a>
+            </li>
+            <li class="mb-4">
+                <a href="product_view_user.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-eye mr-2"></i>
+                    <span class="text-sm">View User Products</span>
+                </a>
+            </li>
+            <li class="mb-4">
+                <a href="register.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    <span class="text-sm">Add User</span>
+                </a>
+            </li>
+            <li class="mb-4">
+                <a href="user_management.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                    <i class="fas fa-users mr-2"></i>
+                    <span class="text-sm">User Management</span>
+                </a>
+            </li>
+        <?php else: ?>
             <li class="mb-4">
                 <a href="product_list.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
                     <i class="fas fa-eye mr-2"></i>
                     <span class="text-sm">View Products</span>
                 </a>
             </li>
-            <li class="mb-4">
-                <a href="contact.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
-                    <i class="fas fa-envelope mr-2"></i>
-                    <span class="text-sm">Contact Us</span>
-                </a>
-            </li>
-            <li class="mb-4">
-                <a href="logout.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    <span class="text-sm">Logout</span>
-                </a>
-            </li>
-        </ul>
-    </div>
+        <?php endif; ?>
+        <li class="mb-4">
+            <a href="contact.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                <i class="fas fa-envelope mr-2"></i>
+                <span class="text-sm">Contact Us</span>
+            </a>
+        </li>
+        <li class="mb-4">
+            <a href="logout.php" class="flex items-center p-2 rounded hover:bg-gray-700 transition">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                <span class="text-sm">Logout</span>
+            </a>
+        </li>
+    </ul>
+</div>
 
     <!-- Main Content -->
     <div class="flex-1 ml-48 p-5 overflow-y-auto">
@@ -164,14 +175,7 @@ $role = $userRow['role']; // Get user role
                         <h3 class="text-lg">Total Products</h3>
                         <p class="text-2xl font-bold"><?php echo $inventoryData['total_products']; ?></p>
                     </div>
-                    <div class="bg-yellow-100 p-4 rounded">
-                        <h3 class="text-lg">Low Stock Items</h3>
-                        <p class="text-2xl font-bold"><?php echo $inventoryData['low_stock']; ?></p>
-                    </div>
-                    <div class="bg-red-100 p-4 rounded">
-                        <h3 class="text-lg">Out of Stock Items</h3>
-                        <p class="text-2xl font-bold"><?php echo $inventoryData['out_of_stock']; ?></p>
-                    </div>
+                  
                 </div>
             </div>
         </div>
